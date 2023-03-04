@@ -23,13 +23,15 @@ export const handler = async(event) => {
             }
     }else if (data.header.token === lark_token){
         if (data.header.event_type === 'im.message.receive_v1') {
+            console.log(data);
             const message = data.event.message;
+            const msg_type = message.message_type;
             const open_chat_id = message.chat_id;
             const msg = JSON.parse(message.content).text;
             const command = new PublishCommand({
                 TopicArn:topicArn,
                 Message:JSON.stringify({
-                    msg_type:'text',
+                    msg_type:msg_type,
                     msg:msg,
                     open_chat_id: open_chat_id,
                 })
@@ -37,6 +39,7 @@ export const handler = async(event) => {
             try{
                  await snsclient.send(command);
             }catch(err){
+                console.log(JSON.stringify(err));
                 await larkclient.im.message.create({
                     params: {
                         receive_id_type: 'chat_id',
@@ -55,32 +58,4 @@ export const handler = async(event) => {
                  statusCode: 400,
             }
     }
-
-    
-    // const body = JSON.parse(event.body);
-    // console.log(body.payload);
-    // console.log(event.requestContext)
-    
-    // const command = new PublishCommand({
-    //     TopicArn:topicArn,
-    //     Message:JSON.stringify({
-    //         requestContext:event.requestContext,
-    //         payload: body.payload,
-    //     })
-    // });
-    
-    // let response;
-    // try{
-    //      await snsclient.send(command);
-    //      response = {
-    //         statusCode: 200,
-        
-    //      };
-    // }catch(err){
-    //     response = {
-    //         statusCode: 200,
-    //         body:JSON.stringify(err)
-    //      };
-    // }
-    // return response;
 };

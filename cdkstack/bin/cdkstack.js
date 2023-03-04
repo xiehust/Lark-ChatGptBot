@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-const cdk = require('aws-cdk-lib');
-const { CdkstackStack } = require('../lib/cdkstack-stack');
+import {App}  from 'aws-cdk-lib';
+import  { CdkstackStack }  from '../lib/cdkstack-stack.js';
+import * as dotenv from 'dotenv' 
+dotenv.config()
 
-const app = new cdk.App();
+const app = new App();
 new CdkstackStack(app, 'CdkstackStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
@@ -15,7 +17,7 @@ new CdkstackStack(app, 'CdkstackStack', {
 
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 });

@@ -71,11 +71,19 @@ export const handler = async (event) => {
   const body = JSON.parse(event.Records[0].Sns.Message);
   console.log(body);
   const open_chat_id = body.open_chat_id;
-  const msg = body.msg;
-  const current_msg = {role:'user',content:msg}
+  const msg_type = body.msg_type;
+  let msg;
+  let current_msg;
+  if (msg_type == 'text'){
+      msg = body.msg;
+      current_msg = {role:'user',content:msg}
+  } else{
+      await sendLarkMessage(open_chat_id,`暂不支持'${msg_type}'格式的输入`);
+      return { statusCode: 200,}
+  }
+ 
   let messages;
   let prev_msgs;
-  
   //send command to clear the messages
   if (msg === start_command){
       await saveDynamoDb(open_chat_id,null);
